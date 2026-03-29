@@ -1,0 +1,17 @@
+# IDE
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+local.properties
+
+# Android
+android/app/release/
+*.apk
+*.aab
+
+# Environment
+.env
+*.env

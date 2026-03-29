@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.developer.fuel-finder.service.gov.uk)",
+      "WebFetch(domain:www.gov.uk)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.fuel-finder.uk)",
+      "WebFetch(domain:community.openstreetmap.org)",
+      "WebFetch(domain:www.techbooky.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:checkfuelprices.co.uk)",
+      "WebFetch(domain:community.home-assistant.io)"
+    ]
+  }
+}
