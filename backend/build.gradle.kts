@@ -40,3 +40,10 @@ dependencies {
 kotlin {
     jvmToolchain(17)
 }
+
+tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    archiveBaseName.set("fueller-backend")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    mergeServiceFiles()
+}
