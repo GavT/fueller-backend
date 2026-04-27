@@ -15,3 +15,7 @@ android/app/release/
 # Environment
 .env
 *.env
+
+# Sensitive credential files
+.github_token
+.aws_credentials
