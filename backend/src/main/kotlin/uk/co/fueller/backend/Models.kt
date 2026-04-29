@@ -125,7 +125,44 @@ data class ErrorResponse(
 @Serializable
 data class HealthResponse(
     val status: String,
+    val mode: String,
     val dataLoaded: Boolean,
+    val isStale: Boolean,
     val lastPriceRefresh: String,
-    val nextPriceRefresh: String
+    val nextPriceRefresh: String,
+    val stationCount: Int,
+    val priceCount: Int,
+    val ingestSource: String,
+    val ingesterVersion: String? = null
+)
+
+// --- Laptop-ingest models (push mode) ---
+
+/**
+ * Payload accepted by POST /admin/ingest.
+ *
+ * `stations` and `prices` are passthroughs of the upstream Fuel Finder responses
+ * (see FuelFinderClient.fetchAllStations / fetchAllPrices).
+ */
+@Serializable
+data class IngestRequest(
+    @SerialName("fetched_at") val fetchedAt: String,
+    @SerialName("ingester_version") val ingesterVersion: String? = null,
+    val stations: List<FuelFinderStation> = emptyList(),
+    val prices: List<FuelFinderPriceRecord> = emptyList()
+)
+
+@Serializable
+data class IngestResponse(
+    val stations: Int,
+    val prices: Int,
+    @SerialName("fetched_at") val fetchedAt: String,
+    @SerialName("previous_fetched_at") val previousFetchedAt: String? = null,
+    @SerialName("ingester_version") val ingesterVersion: String? = null
+)
+
+@Serializable
+data class StaleIngestResponse(
+    val error: String,
+    @SerialName("current_fetched_at") val currentFetchedAt: String
 )

@@ -2,11 +2,11 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.serialization") version "1.9.24"
     application
-    id("io.github.goooler.shadow") version "8.1.8"
+    id("com.gradleup.shadow") version "9.4.1"
 }
 
 group = "uk.co.fueller"
-version = "0.1.0"
+version = "0.2.0"
 
 application {
     mainClass.set("uk.co.fueller.backend.ApplicationKt")
@@ -17,6 +17,7 @@ repositories {
 }
 
 val ktorVersion = "2.3.12"
+val kotlinVersion = "1.9.24"
 
 dependencies {
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -35,10 +36,21 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
     implementation("ch.qos.logback:logback-classic:1.4.14")
+
+    // --- tests ---
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 }
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
