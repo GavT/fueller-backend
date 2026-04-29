@@ -83,9 +83,10 @@ class DataCacheTest {
 
         val results = cache.findNearby(51.5, -0.1, 50.0)
         assertTrue(results.isNotEmpty())
-        assertTrue(results.all { it.nodeId.startsWith("t") }) {
+        assertTrue(
+            results.all { it.nodeId.startsWith("t") },
             "expected only t* nodes after second ingest, got: ${results.map { it.nodeId }}"
-        }
+        )
     }
 
     @Test
