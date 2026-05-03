@@ -34,7 +34,7 @@ data class StationLocation(
 
 @Serializable
 data class FuelFinderStation(
-    @SerialName("node_id") val nodeId: String,
+    @SerialName("node_id") val nodeId: String? = null,
     @SerialName("trading_name") val tradingName: String? = null,
     @SerialName("brand_name") val brandName: String? = null,
     val location: StationLocation? = null,
@@ -53,7 +53,7 @@ data class FuelPrice(
 
 @Serializable
 data class FuelFinderPriceRecord(
-    @SerialName("node_id") val nodeId: String,
+    @SerialName("node_id") val nodeId: String? = null,
     @SerialName("fuel_prices") val fuelPrices: List<FuelPrice> = emptyList()
 )
 

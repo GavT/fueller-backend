@@ -90,8 +90,12 @@ class FuelFinderClient(
             }
 
             val rawBody = response.bodyAsText()
-            val batch_data = json.decodeFromString<List<FuelFinderStation>>(rawBody)
-            if (batch_data.isEmpty()) break
+            val rawBatch = json.decodeFromString<List<FuelFinderStation>>(rawBody)
+            if (rawBatch.isEmpty()) break
+
+            val batch_data = rawBatch.filter { it.nodeId != null }
+            val dropped = rawBatch.size - batch_data.size
+            if (dropped > 0) log.warn("Dropped $dropped stations with null node_id in batch $batch")
 
             allStations.addAll(batch_data)
             log.info("Fetched ${batch_data.size} stations (total: ${allStations.size})")
@@ -128,8 +132,12 @@ class FuelFinderClient(
             }
 
             val rawBody = response.bodyAsText()
-            val batch_data = json.decodeFromString<List<FuelFinderPriceRecord>>(rawBody)
-            if (batch_data.isEmpty()) break
+            val rawPrices = json.decodeFromString<List<FuelFinderPriceRecord>>(rawBody)
+            if (rawPrices.isEmpty()) break
+
+            val batch_data = rawPrices.filter { it.nodeId != null }
+            val droppedPrices = rawPrices.size - batch_data.size
+            if (droppedPrices > 0) log.warn("Dropped $droppedPrices price records with null node_id in batch $batch")
 
             allPrices.addAll(batch_data)
             log.info("Fetched ${batch_data.size} price records (total: ${allPrices.size})")

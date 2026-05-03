@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "uk.co.fueller"
-version = "0.2.0"
+version = "0.2.1"
 
 application {
     mainClass.set("uk.co.fueller.backend.ApplicationKt")
