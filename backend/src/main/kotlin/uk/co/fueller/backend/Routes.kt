@@ -6,7 +6,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.time.format.DateTimeFormatter
 
-fun Application.configureRoutes(cache: DataCache, client: FuelFinderClient) {
+fun Application.configureRoutes(
+    cache: DataCache,
+    client: FuelFinderClient,
+    mode: String,
+    ingestToken: String?,
+    maxIngestBytes: Long
+) {
     routing {
         get("/api/search") {
             val postcode = call.parameters["postcode"]
@@ -23,6 +29,11 @@ fun Application.configureRoutes(cache: DataCache, client: FuelFinderClient) {
 
             if (!cache.isLoaded) {
                 call.respond(HttpStatusCode.ServiceUnavailable, ErrorResponse("Data is still loading, please try again shortly"))
+                return@get
+            }
+
+            if (cache.isStale) {
+                call.respond(HttpStatusCode.ServiceUnavailable, ErrorResponse("Data is stale, please try again shortly"))
                 return@get
             }
 
@@ -51,11 +62,19 @@ fun Application.configureRoutes(cache: DataCache, client: FuelFinderClient) {
             call.respond(
                 HealthResponse(
                     status = "ok",
+                    mode = mode,
                     dataLoaded = cache.isLoaded,
+                    isStale = cache.isStale,
                     lastPriceRefresh = DateTimeFormatter.ISO_INSTANT.format(cache.lastPriceRefresh),
-                    nextPriceRefresh = DateTimeFormatter.ISO_INSTANT.format(cache.nextPriceRefresh)
+                    nextPriceRefresh = DateTimeFormatter.ISO_INSTANT.format(cache.nextPriceRefresh),
+                    stationCount = cache.stationCount,
+                    priceCount = cache.priceCount,
+                    ingestSource = if (mode == "push") "laptop-push" else "scheduled-pull",
+                    ingesterVersion = cache.ingesterVersion
                 )
             )
         }
+
+        ingestRoutes(cache, mode, ingestToken, maxIngestBytes)
     }
 }
