@@ -85,7 +85,7 @@ class DataCache(
     private suspend fun loadStations() {
         log.info("Loading all stations...")
         val fetched = client.fetchAllStations()
-        stations.set(fetched.associateBy { it.nodeId })
+        stations.set(fetched.mapNotNull { s -> s.nodeId?.let { id -> id to s } }.toMap())
         lastStationRefresh = Instant.now()
         log.info("Loaded ${stations.get().size} stations")
     }
@@ -101,10 +101,10 @@ class DataCache(
         if (incremental && since != null) {
             // Merge incremental updates into the existing snapshot.
             val merged = prices.get().toMutableMap()
-            fetched.forEach { record -> merged[record.nodeId] = record.fuelPrices }
+            fetched.forEach { record -> record.nodeId?.let { merged[it] = record.fuelPrices } }
             prices.set(merged)
         } else {
-            prices.set(fetched.associate { it.nodeId to it.fuelPrices })
+            prices.set(fetched.mapNotNull { r -> r.nodeId?.let { id -> id to r.fuelPrices } }.toMap())
         }
         lastPriceRefresh = Instant.now()
         log.info("Loaded prices for ${fetched.size} stations (total cached: ${prices.get().size})")
@@ -122,8 +122,8 @@ class DataCache(
         fetchedAt: Instant,
         ingesterVersion: String? = null
     ) {
-        stations.set(newStations.associateBy { it.nodeId })
-        prices.set(newPrices.associate { it.nodeId to it.fuelPrices })
+        stations.set(newStations.mapNotNull { s -> s.nodeId?.let { id -> id to s } }.toMap())
+        prices.set(newPrices.mapNotNull { r -> r.nodeId?.let { id -> id to r.fuelPrices } }.toMap())
         lastPriceRefresh = fetchedAt
         lastStationRefresh = fetchedAt
         this.ingesterVersion = ingesterVersion
@@ -163,7 +163,7 @@ class DataCache(
                 ).joinToString(", ")
 
                 StationWithPrices(
-                    nodeId = station.nodeId,
+                    nodeId = station.nodeId!!,  // cache only contains non-null ids (filtered upstream)
                     name = station.tradingName ?: station.brandName ?: "Unknown",
                     brand = station.brandName,
                     address = address,
